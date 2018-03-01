@@ -1,11 +1,66 @@
 # Sphere Ray-cast using Unity
 --------------------------
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+<img src="https://i.imgur.com/49sV7G1.gif" width="250">
 
+<<<<<<< HEAD
+<img src="https://i.imgur.com/sQb36J9.gif" width="250">
+>>>>>>> 2809337... Update README.md
+=======
+
+<<<<<<< HEAD
+<img src="https://i.imgur.com/49sV7G1.gif">
+
+<img src="https://i.imgur.com/sQb36J9.gif">
+>>>>>>> aa4963e... Update README.md
+=======
+![gif](https://i.imgur.com/sQb36J9.gif)
+>>>>>>> 7224ebe... Update README.md
+=======
+![gif](https://i.imgur.com/bettbgN.gif)
+>>>>>>> d86c0ca... Update README.md
+=======
+
+Sphere Ray-casting is a wide-range 3D raycasting method that uses Unity [Physics.SphereCast()](https://docs.unity3d.com/ScriptReference/Physics.SphereCast.html) and [Physics.RayCast()](https://docs.unity3d.com/ScriptReference/Physics.Raycast.html) to detect the best GameObject that can be interacted.
+
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+![gif](https://i.imgur.com/sQb36J9.gif | width="48")
+>>>>>>> d3b0102... Update README.md
+=======
+![gif](https://i.imgur.com/sQb36J9.gif)
+>>>>>>> b2a2d33... Update README.md
+=======
+![gif](https://imgur.com/sQb36J9)
+>>>>>>> b26d233... Update README.md
+=======
+=======
+![gif](https://i.imgur.com/49sV7G1.gif?1)
+>>>>>>> 0300f56... Update README.md
+=======
+![gif](https://i.imgur.com/49sV7G1.gif?1 | width="50%")
+>>>>>>> 0712919... Update README.md
+![gif](https://i.imgur.com/sQb36J9.gif?1)
+>>>>>>> eaccdbe... Update README.md
+
+=======
+>>>>>>> 3d83912... Update README.md
+=======
+![gif](https://i.imgur.com/eSDGxZp.gif)
+![gif](https://i.imgur.com/RQWWBCT.gif)
+
+>>>>>>> 4a25ff9... Update README.md
 ## Project Description
 
 This project provides scripts needed to implement Sphere Ray-casting and an example scene that shows how it works.
-
-Sphere Ray-casting is a wide-range 3D raycasting method that uses Unity [Physics.SphereCast()](https://docs.unity3d.com/ScriptReference/Physics.SphereCast.html) and [Physics.RayCast()](https://docs.unity3d.com/ScriptReference/Physics.Raycast.html) to detect the best GameObject that can be interacted.
 
 ## Table of Content
 
@@ -65,13 +120,15 @@ These explanation describes the provided example scene [Assets/Scenes/SphereCast
 
 Sphere Ray-cast allows wider ray-casting method in first-person game by first gathering all objects inside a range created by sweeping a sphere in front of character and determining if they're blocked by any object.
 
+![gif](https://i.imgur.com/pDdh7Q7.gif)
+
 It uses Physics.SphereCast() to query every objects collided by SphereCast. This returns an array of RayCastHit sorted by distance from player.
 
-<<<<<<< HEAD
-```
-=======
 ```C#
+<<<<<<< HEAD
 >>>>>>> 2cc4416... Update README.md
+=======
+>>>>>>> 4fe5be0... Update README.md
 allHits = Physics.SphereCastAll(this.transform.position, castRadius,
 				this.transform.forward, castDistance); // spherecast to find the objects.
 ```
@@ -82,6 +139,7 @@ There are two versions of sphere ray-cast:
 
 1. DetectInteractableObject.cs:
 * This script simply sorts all objects collected by angle from center then returns the closest one to the center that is not blocked.
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 2.DetectInteractableObjectComparative.cs:
@@ -94,6 +152,8 @@ There are two versions of sphere ray-cast:
 - Check comments on script for more detail.
 =======
 =======
+=======
+>>>>>>> 4fe5be0... Update README.md
 2. DetectInteractableObjectComparative.cs:
 >>>>>>> cc49163... Update README.md
 * This scrit compares the angle between each objects collected and returns the most optimal one. This may not be an object with the smallest angle from the center.
@@ -102,24 +162,30 @@ There are two versions of sphere ray-cast:
   * If an object is close enough to center by set angle and is also closest object by distance from player to be so, it becomes an object picked.
   * If no such object was found, the closest object to the center will be returned.
 * Check comments on script for more detail.
+<<<<<<< HEAD
 >>>>>>> 9935479... Update README.md
+=======
+>>>>>>> 4fe5be0... Update README.md
 
 _1 is easier to implement than 2, but 2 has better control and performance._
 
-**_1 Has <img src="https://latex.codecogs.com/gif.latex?O(n^2)" title="O(n^2)" /> worstcase runtime. 2 has <img src="https://latex.codecogs.com/gif.latex?O(nlgn)" title="O(nlgn)" />_**
+**_1 Has <img src="https://latex.codecogs.com/gif.latex?O(n^2)" title="O(n^2)" /> worstcase runtime. 2 has <img src="https://latex.codecogs.com/gif.latex?O(n)" title="O(nlgn)" /> worstcase runtime._**
 
 <<<<<<< HEAD
 <<<<<<< HEAD
 In order for GameObjects to be detected by this ray-cast, it must implement "IInteractable" interface, also provided by this project.
 <<<<<<< HEAD
 
+<<<<<<< HEAD
 ## Example Overview
 
 These explanation describes the provided example scene [Assets/Scenes/SphereCastTest.unity](https://github.com/ALee1303/Sphere-Raycasting/tree/master/Assets/Scenes).
 
+=======
+>>>>>>> 4fe5be0... Update README.md
 ### Prerequisite
 * Project Version: Unity2017.3.1
-* To avoid version conflict, import package "SphereCastTest.unitypackage" into an existing project and open the scene.
+* To avoid version conflict, import package __SphereCastTest.unitypackage__ into an existing project and open the scene.
 * I recommend running test with editor screen on to see full functionality.
 
 ### Running the Test
@@ -130,10 +196,12 @@ These explanation describes the provided example scene [Assets/Scenes/SphereCast
 - White, blue, and pink objects have interactable implemented and will display message on Console Log when interacted.
 - red objects are not interactable and will block the interactable objects from being detected.
 - Gizmos will be shown on editor screen for details:
+<<<<<<< HEAD
  - White lines will be displayed on every object checked by sphere ray-cast.
  - Green line shows which object will be interacted when left-mouse is clicked.
  - Yellow spheres represent "DetectInteractableObject.cs" range.
  - Red spheres represent "DetectInteractableObjectComparative.cs" range.
+<<<<<<< HEAD
 =======
 * Scene consit of Unity FirstPersonCharacter controller that implements both versions of raycast.
 * move around the scene and click left-mouse to see which interactables are dectected on various state.
@@ -156,5 +224,25 @@ __In order for GameObjects to be detected by this ray-cast, it must implement _I
 
 ## License
 
+<<<<<<< HEAD
+<<<<<<< HEAD
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 >>>>>>> cc49163... Update README.md
+=======
+This project is licensed under the MIT License - see the [LICENSE](License.txt) file for details
+>>>>>>> 4ff9485... Update ReadMe and License
+=======
+This project is licensed under the MIT License - see the [LICENSE](License.md) file for details
+>>>>>>> 7dc5e41... Update ReadMe and License
+=======
+=======
+  - White lines will be displayed on every object checked by sphere ray-cast.
+  - Green line shows which object will be interacted when left-mouse is clicked.
+  - Yellow spheres represent __DetectInteractableObject.cs__ range.
+  - Red spheres represent __DetectInteractableObjectComparative.cs__ range.
+>>>>>>> 7d91dd4... Update README.md
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](License.md) file for details
+>>>>>>> 4fe5be0... Update README.md
