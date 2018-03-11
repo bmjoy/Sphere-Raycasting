@@ -25,10 +25,11 @@ This project provides scripts needed to implement Sphere Ray-casting and an exam
 
 ## How to Setup
 
-These explanation will get you through implementing sphere raycast on any Unity Project with versions that allow [Physics.SphereCast()](https://docs.unity3d.com/ScriptReference/Physics.SphereCast.html) or [Physics.RayCast()](https://docs.unity3d.com/ScriptReference/Physics.Raycast.html).
+These explanations will get you through implementing sphere raycast on any Unity Project with versions that allow [Physics.SphereCast()](https://docs.unity3d.com/ScriptReference/Physics.SphereCast.html) or [Physics.RayCast()](https://docs.unity3d.com/ScriptReference/Physics.Raycast.html).
 
 ### Requirements
 
+* Unity 2017
 * 3D Unity scene
 * Any kind of FPS control with camera attached
 
