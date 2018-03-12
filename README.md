@@ -103,11 +103,6 @@ _1 is easier to implement than 2, but 2 has better control and performance._
 
 __In order for GameObjects to be detected by this ray-cast, it must implement _IInteractable_ interface, also provided by this project.__
 
-### Prerequisite
-* Project Version: Unity2017.3.1
-* To avoid version conflict, import package __SphereCastTest.unitypackage__ into an existing project and open the scene.
-* I recommend running test with editor screen on to see full functionality.
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](License.md) file for details
