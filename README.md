@@ -108,18 +108,6 @@ __In order for GameObjects to be detected by this ray-cast, it must implement _I
 * To avoid version conflict, import package __SphereCastTest.unitypackage__ into an existing project and open the scene.
 * I recommend running test with editor screen on to see full functionality.
 
-### Running the Test
-- Scene consit of Unity FirstPersonCharacter controller that implements both versions of raycast.
-- move around the scene and click left-mouse to see which interactables are dectected on various state.
-- Enable one of the Detect scripts attached to FPSController's child to check each functionality.
-- White, blue, and pink objects have interactable implemented and will display message on Console Log when interacted.
-- red objects are not interactable and will block the interactable objects from being detected.
-- Gizmos will be shown on editor screen for details:
-  - White lines will be displayed on every object checked by sphere ray-cast.
-  - Green line shows which object will be interacted when left-mouse is clicked.
-  - Yellow spheres represent __DetectInteractableObject.cs__ range.
-  - Red spheres represent __DetectInteractableObjectComparative.cs__ range.
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](License.md) file for details
