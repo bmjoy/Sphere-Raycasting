@@ -15,6 +15,7 @@ This project provides scripts needed to implement Sphere Ray-casting and an exam
 <!--ts-->
 * [Objective](#objective)
 * [Performance Overview](#performance-overview)
+  * [Analysis of SphereCast](#analysis-of-spherecast)
 * [How to Setup](#how-to-setup)
   * [Requirements](#requirements)
   * [Deployment](#deployment)
@@ -38,16 +39,7 @@ Sphere Ray-cast allows wider ray-casting method in first-person game by first ga
 
 | ![gif](https://i.imgur.com/pDdh7Q7.gif) | 
 |:--:| 
-| *__1__Succesful block checks are shown by gizmo lines on editor window. Green line means the unblocked objects are interactable. White lines are uniteractable objects__2__Blue and Pink Cubes are both interactable objects in range of SphereCast(), displayed by red gizmo sphere in editor window. However, when blocked by* |
-
-It uses Physics.SphereCast() to query every objects collided by SphereCast. This returns an array of RayCastHit sorted by distance from player.
-
-```C#
-allHits = Physics.SphereCastAll(this.transform.position, castRadius,
-				this.transform.forward, castDistance); // spherecast to find the objects.
-```
-
-Then out of these objects it uses angle comparison and to determine the best object to interact with. It also uses Physics.RayCast() to check if theres anything blocking the object from the player.
+| ***1**Succesful block checks are shown by gizmo lines on editor window. Green line means the unblocked objects are interactable. White lines are uniteractable objects**2**Blue and Pink Cubes are both interactable objects in range of SphereCast(), displayed by red gizmo sphere in editor window. However, when blocked by the uninteractable red wall, it fails block check. (As shown above when cubes are blocked from player's view, white lines are drawn from player to the red wall, but no green lines are drawn towards the interactable cubes)* |
 
 There are two versions of sphere ray-cast:
 
@@ -67,7 +59,21 @@ _1 is easier to implement than 2, but 2 has better control and performance._
 
 **Not considering Unity3D's built-in _SphereCast()_ method, 1 Has <img src="https://latex.codecogs.com/gif.latex?O(n^2)" title="O(n^2)" /> worstcase runtime. 2 has <img src="https://latex.codecogs.com/gif.latex?O(n)" title="O(nlgn)" /> worstcase runtime._**
 
-__In order for GameObjects to be detected by this ray-cast, it must implement _IInteractable_ interface, also provided by this project.__
+### Analysis of SphereCast
+
+Both Sphere-Raycasting method uses Physics.SphereCast() to query every objects collided by the sphere sweeped in front of the player. This returns info of all collided object as minimum heap of RayCastHit sorted by distance from player.
+
+**Note that these objects could either be interactable or uninteractable**
+
+```C#
+RaycastHit[] allHits; // array-based min-heap containing info of colided objects
+allHits = Physics.SphereCastAll(this.transform.position, castRadius,
+				this.transform.forward, castDistance); // spherecast to find the objects.
+```
+
+ Suppose there were _n_ amounts of objects collided by SphereCast. Then every _n_ element will be inserted into the heap, performing _n_ number of insert. At worst case, every newly inserted element will be a new minimum in heap, that is it would be the closest object from the play in the heap. If there were _n_ object in the heap prior to the insertion, this would cause the newly inserted minimum to traverse up the height of the binary tree, which would be ![gif](https://latex.codecogs.com/gif.latex?%5Clg%20n)
+
+Then out of these objects it uses angle comparison to determine the best object to interact with. It also uses Physics.RayCast() to check if theres anything blocking the object from the player.
 
 ## How to Setup
 
@@ -78,6 +84,8 @@ These explanations will get you through implementing sphere raycast on any Unity
 * Unity 2017
 * 3D Unity scene
 * Any kind of FPS control with camera attached
+
+__In order for GameObjects to be detected by this ray-cast, it must implement _IInteractable_ interface, also provided by this project.__
 
 ### Deployment
 
