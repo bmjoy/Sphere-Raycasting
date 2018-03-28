@@ -13,15 +13,61 @@ This project provides scripts needed to implement Sphere Ray-casting and an exam
 ## Table of Content
 
 <!--ts-->
+* [Objective](#objective)
+* [Performance Overview](#performance-overview)
 * [How to Setup](#how-to-setup)
   * [Requirements](#requirements)
   * [Deployment](#deployment)
 * [Example Overview](#example-overview)
   * [Requirement and Deployment](#requirement-and-deployment)
   * [Running the Test](#running-the-test)
-* [Performance Overview](#performance-overview)
 * [License](#license)
 <!--te-->
+
+## Objective
+
+While in developement of third-person puzzle game Aiku, I was tasked to come up with an improved raycasting method to provide a wider range of detection. Our head developer initially wanted to use the Unity provided SphereCast() method, but there were two missing functionallity in this method that were required to achieve the performance we needed.
+
+One was checking whether the inspect object is blocked or not, whether it may be a terrain or uninteractable objects. This would mean even if the blocked object was scripted to be interactable, it might actually be unsuitable for interaction.
+
+Second was the way SphereCast sorted the objects. Unity3D's Physics.SphereCast() returns an array-based heap of RayCastHit to its provided parameter _hitinfo_, sorted by their distance from the SphereCast's starting position. Although this was a useful information that could be used to prioritize the object to interact with when more than one interactables were in range, our head developer specifically wanted a way of prioritizing object interaction by the angle between the object and center of the screen.
+
+## Performance Overview
+
+Sphere Ray-cast allows wider ray-casting method in first-person game by first gathering all objects inside a range created by sweeping a sphere in front of character and determining if they're blocked by any object.
+
+| ![gif](https://i.imgur.com/pDdh7Q7.gif) | 
+|:--:| 
+| * Succesful block checks are shown by gizmo lines on editor window. Green line means the unblocked objects are interactable. White lines are uniteractable objects Blue and Pink Cubes are both interactable objects in range of SphereCast(), displayed by red gizmo sphere in editor window. However, when blocked by * |
+
+It uses Physics.SphereCast() to query every objects collided by SphereCast. This returns an array of RayCastHit sorted by distance from player.
+
+```C#
+allHits = Physics.SphereCastAll(this.transform.position, castRadius,
+				this.transform.forward, castDistance); // spherecast to find the objects.
+```
+
+Then out of these objects it uses angle comparison and to determine the best object to interact with. It also uses Physics.RayCast() to check if theres anything blocking the object from the player.
+
+There are two versions of sphere ray-cast:
+
+1. DetectInteractableObject.cs:
+* This script simply sorts all objects collected by angle from center then returns the closest one to the center that is not blocked.
+![gif](https://i.imgur.com/jexAVoq.gif)
+2. DetectInteractableObjectComparative.cs:
+* This scrit compares the angle between each objects collected and returns the most optimal one. This may not be an object with the smallest angle from the center.
+* This script uses greedy algorithm and will have better runtime-complexity than the other one.
+* It either returns an object with the closest angle from the camera or closest distance from the player. It also allows a light-weight Observer(Event) patter in designing GameObject interaction.
+  * If an object is close enough to center by set angle and is also closest object by distance from player to be so, it becomes an object picked.
+  * If no such object was found, the closest object to the center will be returned.
+* Check comments on script for more detail.
+![gif](https://i.imgur.com/xut6Wj2.gif)
+
+_1 is easier to implement than 2, but 2 has better control and performance._
+
+**Not considering Unity3D's built-in _SphereCast()_ method, 1 Has <img src="https://latex.codecogs.com/gif.latex?O(n^2)" title="O(n^2)" /> worstcase runtime. 2 has <img src="https://latex.codecogs.com/gif.latex?O(n)" title="O(nlgn)" /> worstcase runtime._**
+
+__In order for GameObjects to be detected by this ray-cast, it must implement _IInteractable_ interface, also provided by this project.__
 
 ## How to Setup
 
@@ -67,41 +113,6 @@ These explanation describes the provided example scene [Assets/Scenes/SphereCast
   * Red spheres represent __DetectInteractableObjectComparative.cs__ range.
 
 ![gif](https://i.imgur.com/ttH5tY8.gif)
-
-## Performance Overview
-
-Sphere Ray-cast allows wider ray-casting method in first-person game by first gathering all objects inside a range created by sweeping a sphere in front of character and determining if they're blocked by any object.
-
-![gif](https://i.imgur.com/pDdh7Q7.gif)
-
-It uses Physics.SphereCast() to query every objects collided by SphereCast. This returns an array of RayCastHit sorted by distance from player.
-
-```C#
-allHits = Physics.SphereCastAll(this.transform.position, castRadius,
-				this.transform.forward, castDistance); // spherecast to find the objects.
-```
-
-Then out of these objects it uses angle comparison and to determine the best object to interact with. It also uses Physics.RayCast() to check if theres anything blocking the object from the player.
-
-There are two versions of sphere ray-cast:
-
-1. DetectInteractableObject.cs:
-* This script simply sorts all objects collected by angle from center then returns the closest one to the center that is not blocked.
-![gif](https://i.imgur.com/jexAVoq.gif)
-2. DetectInteractableObjectComparative.cs:
-* This scrit compares the angle between each objects collected and returns the most optimal one. This may not be an object with the smallest angle from the center.
-* This script uses greedy algorithm and will have better runtime-complexity than the other one.
-* It either returns an object with the closest angle from the camera or closest distance from the player. It also allows a light-weight Observer(Event) patter in designing GameObject interaction.
-  * If an object is close enough to center by set angle and is also closest object by distance from player to be so, it becomes an object picked.
-  * If no such object was found, the closest object to the center will be returned.
-* Check comments on script for more detail.
-![gif](https://i.imgur.com/xut6Wj2.gif)
-
-_1 is easier to implement than 2, but 2 has better control and performance._
-
-**_1 Has <img src="https://latex.codecogs.com/gif.latex?O(n^2)" title="O(n^2)" /> worstcase runtime. 2 has <img src="https://latex.codecogs.com/gif.latex?O(n)" title="O(nlgn)" /> worstcase runtime._**
-
-__In order for GameObjects to be detected by this ray-cast, it must implement _IInteractable_ interface, also provided by this project.__
 
 ## License
 
