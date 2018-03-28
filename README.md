@@ -40,7 +40,7 @@ Sphere Ray-cast allows wider ray-casting method in first-person game by first ga
 
 | ![gif](https://i.imgur.com/pDdh7Q7.gif) | 
 |:--:| 
-| ***1.**Succesful block checks are shown by gizmo lines on editor window. White lines are every objects in-range that are not blocked. Green line indicates the best suitable interactable object. **2.**Blue and Pink Cubes are both interactable objects in range of SphereCast(), displayed by red gizmo sphere in editor window. However, when blocked by the uninteractable red wall, it fails block check. (As shown above when cubes are blocked from player's view, white lines are drawn from player to the red wall, but no lines are drawn towards the interactable cubes)* |
+| ***1**Succesful block checks are shown by gizmo lines on editor window. White lines are every objects in-range that are not blocked. Green line indicates the best suitable interactable object. **2**Blue and Pink Cubes are both interactable objects in range of SphereCast(), displayed by red gizmo sphere in editor window. However, when blocked by the uninteractable red wall, it fails block check. (As shown above when cubes are blocked from player's view, white lines are drawn from player to the red wall, but no lines are drawn towards the interactable cubes)* |
 
 There are two versions of sphere ray-cast:
 
@@ -76,7 +76,24 @@ allHits = Physics.SphereCastAll(this.transform.position, castRadius,
 
 ### Analysis of Block Check
 
-Both method of Sphere-RayCasting uses Physics.RayCast() to check if theres anything blocking the object from the player's view.
+Both method of Sphere-RayCasting uses Physics.RayCast() to check if theres anything blocking the object from the player's view. The result is returned as boolean by the function below, and proceeding procedures are only performed if this functionreturns false.
+
+```C#
+private bool IsBlocked(GameObject toCheck)
+{
+    bool toReturn;
+    Vector3 dirFromPlayer = toCheck.transform.position - this.transform.position; // acquire directional vector
+    RaycastHit hit; //holder for the collided object
+    Physics.Raycast(this.transform.position, dirFromPlayer, out hit); // begin raycast from the player camera center
+    if (toCheck == hit.collider.gameObject) // check if it hit the object to check
+        toReturn = false; // not blocked
+    else
+        toReturn = true;
+    return toReturn; //its blocked
+}
+```
+
+The function above takes in the object which needs to be block checked as a parameter. It performs a raycast from center of the player's camera towards the object, then check to see if the object first hit by raycast is indeed object passed in as parameter, meaning that there were no other object between player's view and the object.
 
 ### Analysis of Angle Comparison
 
