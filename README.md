@@ -3,8 +3,8 @@
 
 Sphere Ray-casting is a wide-range 3D raycasting method that uses Unity [Physics.SphereCast()](https://docs.unity3d.com/ScriptReference/Physics.SphereCast.html) and [Physics.RayCast()](https://docs.unity3d.com/ScriptReference/Physics.Raycast.html) to detect the best GameObject that can be interacted.
 
-![gif](https://i.imgur.com/eSDGxZp.gif)
-![gif](https://i.imgur.com/RQWWBCT.gif)
+| ![gif](https://i.imgur.com/eSDGxZp.gif) ![gif](https://i.imgur.com/RQWWBCT.gif) |
+| 
 
 ## Project Description
 
@@ -16,6 +16,7 @@ This project provides scripts needed to implement Sphere Ray-casting and an exam
 * [Objective](#objective)
 * [Performance Overview](#performance-overview)
   * [Analysis of SphereCast](#analysis-of-spherecast)
+  * [Analysis of Block Check](#analysis-of-block-check)
 * [How to Setup](#how-to-setup)
   * [Requirements](#requirements)
   * [Deployment](#deployment)
@@ -39,7 +40,7 @@ Sphere Ray-cast allows wider ray-casting method in first-person game by first ga
 
 | ![gif](https://i.imgur.com/pDdh7Q7.gif) | 
 |:--:| 
-| ***1**Succesful block checks are shown by gizmo lines on editor window. Green line means the unblocked objects are interactable. White lines are uniteractable objects**2**Blue and Pink Cubes are both interactable objects in range of SphereCast(), displayed by red gizmo sphere in editor window. However, when blocked by the uninteractable red wall, it fails block check. (As shown above when cubes are blocked from player's view, white lines are drawn from player to the red wall, but no green lines are drawn towards the interactable cubes)* |
+| ***1.**Succesful block checks are shown by gizmo lines on editor window. White lines are every objects in-range that are not blocked. Green line indicates the best suitable interactable object. **2.**Blue and Pink Cubes are both interactable objects in range of SphereCast(), displayed by red gizmo sphere in editor window. However, when blocked by the uninteractable red wall, it fails block check. (As shown above when cubes are blocked from player's view, white lines are drawn from player to the red wall, but no lines are drawn towards the interactable cubes)* |
 
 There are two versions of sphere ray-cast:
 
@@ -57,7 +58,7 @@ There are two versions of sphere ray-cast:
 
 _1 is easier to implement than 2, but 2 has better control and performance._
 
-**Not considering Unity3D's built-in _SphereCast()_ method, 1 Has <img src="https://latex.codecogs.com/gif.latex?O(n^2)" title="O(n^2)" /> worstcase runtime. 2 has <img src="https://latex.codecogs.com/gif.latex?O(n)" title="O(nlgn)" /> worstcase runtime._**
+**Not considering Unity3D's built-in _SphereCast()_ method, 1 Has <img src="https://latex.codecogs.com/gif.latex?O(n^2)" title="O(n^2)" /> worstcase runtime. 2 has <img src="https://latex.codecogs.com/gif.latex?O(n)" title="O(nl)" /> worstcase runtime.**
 
 ### Analysis of SphereCast
 
@@ -71,9 +72,15 @@ allHits = Physics.SphereCastAll(this.transform.position, castRadius,
 				this.transform.forward, castDistance); // spherecast to find the objects.
 ```
 
- Suppose there were _n_ amounts of objects collided by SphereCast. Then every _n_ element will be inserted into the heap, performing _n_ number of insert. At worst case, every newly inserted element will be a new minimum in heap, that is it would be the closest object from the play in the heap. If there were _n_ object in the heap prior to the insertion, this would cause the newly inserted minimum to traverse up the height of the binary tree, which would be ![gif](https://latex.codecogs.com/gif.latex?%5Clg%20n)
+ Suppose there were _n_ amounts of objects collided by SphereCast. At worst case, every newly inserted element will be a new minimum in heap, which means it would be the closest object from the play in the heap. If there were _n_ object in the heap prior to the insertion, this would cause the newly inserted minimum to traverse up the height of the binary tree, which would be ![gif](https://latex.codecogs.com/gif.latex?%5Clg%20n). Since every element will be inserted into the heap, performing _n_ number of insert, the worst case runtime of SphereCast is ![gif](https://latex.codecogs.com/gif.latex?O%28n%5Clg%20n%29)
 
-Then out of these objects it uses angle comparison to determine the best object to interact with. It also uses Physics.RayCast() to check if theres anything blocking the object from the player.
+### Analysis of Block Check
+
+Both method of Sphere-RayCasting uses Physics.RayCast() to check if theres anything blocking the object from the player's view.
+
+### Analysis of Angle Comparison
+
+Out of the objects collected by Physics.SphereCast(), both versions of _Sphere-Raycasting_ uses angle comparison of their own to determine the best object to interact with.
 
 ## How to Setup
 
