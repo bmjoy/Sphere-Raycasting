@@ -38,8 +38,7 @@ Sphere Ray-cast allows wider ray-casting method in first-person game by first ga
 
 | ![gif](https://i.imgur.com/pDdh7Q7.gif) | 
 |:--:| 
-| *(1)Succesful block checks are shown by gizmo lines on editor window. Green line means the unblocked objects are interactable. White lines are uniteractable objects.
-(2)Blue and Pink Cubes are both interactable objects in range of SphereCast(), displayed by red gizmo sphere in editor window. However, when blocked by* |
+| *__1__Succesful block checks are shown by gizmo lines on editor window. Green line means the unblocked objects are interactable. White lines are uniteractable objects__2__Blue and Pink Cubes are both interactable objects in range of SphereCast(), displayed by red gizmo sphere in editor window. However, when blocked by* |
 
 It uses Physics.SphereCast() to query every objects collided by SphereCast. This returns an array of RayCastHit sorted by distance from player.
 
