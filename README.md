@@ -5,7 +5,7 @@ Sphere Ray-casting is a wide-range 3D raycasting method that uses Unity [Physics
 
 | ![gif](https://i.imgur.com/eSDGxZp.gif) ![gif](https://i.imgur.com/RQWWBCT.gif) |
 |:---| 
-| ***(Left)** Sphere-RayCasting range is visible by the two red spheres displayed on the editor screen.(The SphereCast sweeps between two red sphere to create a cylindrical range.) The green line indicates that the object has been detected and is not blocked. **(Right)** When more than one object is in range,indicated by the lines drawn towards the object(white lines indicate objects not blocked, green line indicates the prioritized object for interaction), activated object is selected by their angle offset from center of the screen. Notice that when both blue and pink sphere is in-range, green lines interchange depending on the camera's view.* |
+| ***(Left)** Sphere-RayCasting range is visible by the two red spheres displayed on the editor screen.(The SphereCast sweeps between two red sphere to create a cylindrical range.) The green line indicates that the object has been detected and is not blocked.**(Right)** When more than one object is in range,indicated by the lines drawn towards the object(white lines indicate objects not blocked, green line indicates the prioritized object for interaction), activated object is selected by their angle offset from center of the screen. Notice that when both blue and pink sphere is in-range, green lines interchange depending on the camera's view.* |
 
 ## Project Description
 
@@ -121,6 +121,7 @@ private void collectInteractables()//find and store all interactables
 Important information to consider here is how the insertions and deletions are performed. C#'s SortedList uses insertion sort to sort every element every time an insertion is performed. At worst case, each new object inserted will be closer to the center than the prior object, which will cause the object to traverse all-the-way down the list to index 0. If this was the case for all _n_ amount of objects found by SphereCast, the worst case performance time of this function is ![gif](https://latex.codecogs.com/gif.latex?O(n^2)).
 
 Since this script simply calls the closest object from the center of the screen, it can sometimes call objects that may seem unsuitable for interaction.
+
 | ![gif](https://i.imgur.com/jexAVoq.gif) |
 |:---|
 | *All white objects are interactables. Notice how even though white sphere is barely visible and far away than other objects, the script simply designates the sphere as the suitable interact (designated by green line)* |
@@ -175,9 +176,11 @@ else if (prevCandidate == null || prevAngle - angle > comparativeAngle)
     return GetSuitableInteract(toCompare, angle, index + 1); // override the previous Interact candidate
 ```
 The result is subtle yet at some conditions quite noticeable, such as one mentioned above.
+
 | ![gif](https://i.imgur.com/xut6Wj2.gif) |
 |:---|
 | *Now suitable object is the closer square object.* |
+
 Not only does this algorithm allow better accuracy, but it improves algorithm of angle check to ![gif](https://latex.codecogs.com/gif.latex?O(n)) time.
 
 ## How to Setup
@@ -198,9 +201,11 @@ __In order for GameObjects to be detected by this ray-cast, it must implement _I
 * Attach either __DetectInteractableObject.cs__ or __DetectInteractableObjectComparative.cs__ to the FPS character. If main camera is attached to the child, attach it to that child.
 * Attach __InteractWithSelectedObject.cs__ to the same GameObject.
 * Adjust editor fields to acquire desired range. See comments on scripts for detail.
+
 | ![gif](https://i.imgur.com/bettbgN.gif) |
 |:---|
 | *example of a correctly implemented inspector using Unity3D's preset FPSController.* |
+
 2. Making Detectable GameObject
 * Create a MonoBehaviour class that implements IInteractable
 * Add code for desired interaction inside Interact() method, which will be called when __Interact__ input is pressed while this object is detected.
