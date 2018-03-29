@@ -18,6 +18,7 @@ This project provides scripts needed to implement Sphere Ray-casting and an exam
 * [Performance Overview](#performance-overview)
   * [Analysis of SphereCast](#analysis-of-spherecast)
   * [Analysis of Block Check](#analysis-of-block-check)
+  * [Analysis of Angle Comparison](#analysis-of-angle-comparison)
 * [How to Setup](#how-to-setup)
   * [Requirements](#requirements)
   * [Deployment](#deployment)
@@ -62,7 +63,7 @@ _1 is easier to implement than 2, but 2 has better control and performance._
 
 Both Sphere-Raycasting method uses Physics.SphereCast() to query every objects collided by the sphere sweeped in front of the player. This returns info of all collided object as minimum heap of RayCastHit sorted by distance from player.
 
-***Note that these objects could either be interactable or uninteractable***
+***Note that this collects all objects in range, interactable or not***
 
 ```C#
 RaycastHit[] allHits; // array-based min-heap containing info of colided objects
@@ -90,7 +91,6 @@ private bool IsBlocked(GameObject toCheck)
     return toReturn; //its blocked
 }
 ```
-
 The function above takes in the object which needs to be block checked as a parameter. It performs a raycast from center of the player's camera towards the object, then check to see if the object first hit by raycast is indeed object passed in as parameter, meaning that there were no other object blocking player's view of the object.
 
 ### Analysis of Angle Comparison
@@ -102,7 +102,7 @@ This script uses C#'s System.Collection's SortedList to sort all objects by thei
 ```C#
 private SortedList<float,GameObject> interactSortedByAngle;
 ```
-The list takes in every object found by the SphereCast. Before each insertion, the angle from the center is calculated and used as a key to be compared. The script does this by calling the funtion below.
+The list takes in every interactable object found by the SphereCast. Before each insertion, the angle from the center is calculated and used as a key to be compared. The script does this by calling the funtion below.
 ```C#
 private void collectInteractables()//find and store all interactables
 {
@@ -121,13 +121,64 @@ private void collectInteractables()//find and store all interactables
 Important information to consider here is how the insertions and deletions are performed. C#'s SortedList uses insertion sort to sort every element every time an insertion is performed. At worst case, each new object inserted will be closer to the center than the prior object, which will cause the object to traverse all-the-way down the list to index 0. If this was the case for all _n_ amount of objects found by SphereCast, the worst case performance time of this function is ![gif](https://latex.codecogs.com/gif.latex?O(n^2)).
 
 Since this script simply calls the closest object from the center of the screen, it can sometimes call objects that may seem unsuitable for interaction.
-|![gif](https://i.imgur.com/jexAVoq.gif)|
+| ![gif](https://i.imgur.com/jexAVoq.gif) |
 |:---|
-|*All white objects are interactables. Notice how even though white sphere is barely visible and far away than other objects, the script simply designates the sphere as the suitable interact (designated by green line)*|
+| *All white objects are interactables. Notice how even though white sphere is barely visible and far away than other objects, the script simply designates the sphere as the suitable interact (designated by green line)* |
 
 **DetectInteractableComparative.cs**:
-To 
-![gif](https://i.imgur.com/xut6Wj2.gif)
+To solve the problem mentioned above, this script adds few more condition to finding the object by using greedy algorithm and dynamic recursion.
+```C#
+ private IInteractable GetSuitableInteract(IInteractable prevCandidate = null, int prevAngle = 180, int index = 0)
+{
+    #region end recursion
+    if (index >= allHits.Length)// at the end of the allHits[] index,
+        return prevCandidate; // end the recursion. Return whatever was found. null if none was found
+    #endregion end recursion
+    
+    // try to get Interactable from current index if it's not blocked
+    IInteractable toCompare
+        = GetSuitableInteract(allHits[index].collider.gameObject);
+	
+    #region ignore angle check
+    if (toCompare == null) // ignore anglecheck if toCompare wasn't suitable
+        return GetSuitableInteract(prevCandidate, prevAngle, index + 1);
+    #endregion ignore angle check
+    
+    #region setup for angle check
+    Vector3 dir = allHits[index].transform.position - this.transform.position; //directional vector towards object to compare
+    int angle = (int)Vector3.Angle(this.transform.forward, dir); // angle to be compared
+    #endregion setup for angle check
+
+    #region angle checking
+    // if angle between center is small enough to just call this candidate
+    if (angle <= angleFromCenter)
+        return toCompare;
+    // if theres nothing to compare or current object is more closer to center by comparativeAngle,
+    else if (prevCandidate == null || prevAngle - angle > comparativeAngle)
+        return GetSuitableInteract(toCompare, angle, index + 1); // override the previous Interact candidate
+    // if all failed, ignore this index and go onto next index
+    return GetSuitableInteract(prevCandidate, prevAngle, index + 1);
+    #endregion
+}
+```
+*If the object is not interactable, it ignores the whole process and goes to the next index.*
+
+*If the object is interactable, the following process occurs:*
+First, if the object being checked is close enough from the center of the screen by given amount _angleFromCenter_, the algorithm will simply ignore proceeding iteration and return that object. If not, it will store the current object's info and go onto next index. If the next object satisfies the first condition, it will return that object.
+```C#
+if (toCompare == null) // ignore anglecheck if toCompare wasn't suitable
+    return GetSuitableInteract(prevCandidate, prevAngle, index + 1);
+```
+If not, it wil compare the calculated angle with that of the previous object. If the comparison is bigger than the given angle _comparativeAngle_, meaning the new object is substantially closer to the center than the candidate before, the new object will replace the previous candidate, becoming the new optimal candidate.
+```C#
+else if (prevCandidate == null || prevAngle - angle > comparativeAngle)
+    return GetSuitableInteract(toCompare, angle, index + 1); // override the previous Interact candidate
+```
+The result is subtle yet at some conditions quite noticeable, such as one mentioned above.
+| ![gif](https://i.imgur.com/xut6Wj2.gif) |
+|:---|
+| *Now suitable object is the closer square object.* |
+Not only does this algorithm allow better accuracy, but it improves algorithm of angle check to ![gif](https://latex.codecogs.com/gif.latex?O(n)) time.
 
 ## How to Setup
 
@@ -147,7 +198,9 @@ __In order for GameObjects to be detected by this ray-cast, it must implement _I
 * Attach either __DetectInteractableObject.cs__ or __DetectInteractableObjectComparative.cs__ to the FPS character. If main camera is attached to the child, attach it to that child.
 * Attach __InteractWithSelectedObject.cs__ to the same GameObject.
 * Adjust editor fields to acquire desired range. See comments on scripts for detail.
-![gif](https://i.imgur.com/bettbgN.gif)
+| ![gif](https://i.imgur.com/bettbgN.gif) |
+|:---|
+| *example of a correctly implemented inspector using Unity3D's preset FPSController.* |
 2. Making Detectable GameObject
 * Create a MonoBehaviour class that implements IInteractable
 * Add code for desired interaction inside Interact() method, which will be called when __Interact__ input is pressed while this object is detected.
@@ -174,7 +227,9 @@ These explanation describes the provided example scene [Assets/Scenes/SphereCast
   * Yellow spheres represent __DetectInteractableObject.cs__ range.
   * Red spheres represent __DetectInteractableObjectComparative.cs__ range.
 
-![gif](https://i.imgur.com/ttH5tY8.gif)
+| ![gif](https://i.imgur.com/ttH5tY8.gif) |
+|:---|
+| *Top view of the provided test scene.* |
 
 ## License
 
