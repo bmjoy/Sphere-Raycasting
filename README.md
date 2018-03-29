@@ -170,12 +170,12 @@ To solve the problem mentioned above, this script adds few more condition to fin
 *If the object is not interactable, it ignores the whole process and goes to the next index.*
 
 *If the object is interactable, the following process occurs:*
-First, if the object being checked is close enough from the center of the screen by given amount _angleFromCenter_, the algorithm will simply ignore proceeding iteration and return that object. If not, it will store the current object's info and go onto next index. If the next object satisfies the first condition, it will return that object.
+First, if the object being checked is close enough from the center of the screen by given amount _angleFromCenter_, the algorithm will simply ignore proceeding iteration and return that object.
 ```C#
 if (toCompare == null) // ignore anglecheck if toCompare wasn't suitable
     return GetSuitableInteract(prevCandidate, prevAngle, index + 1);
 ```
-If not, it wil compare the calculated angle with that of the previous object. If the comparison is bigger than the given angle _comparativeAngle_, meaning the new object is substantially closer to the center than the candidate before, the new object will replace the previous candidate, becoming the new optimal candidate.
+If not, it wil compare the calculated angle with that of the previous object. If the comparison is bigger than the given angle _comparativeAngle_, meaning the new object is substantially closer to the center than the candidate before, the new object will replace the previous candidate, becoming the new optimal candidate. This iteration will continue until either the first condition is met, or if it reaches the end of the array.
 ```C#
 else if (prevCandidate == null || prevAngle - angle > comparativeAngle)
     return GetSuitableInteract(toCompare, angle, index + 1); // override the previous Interact candidate
