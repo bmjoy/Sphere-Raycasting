@@ -1,5 +1,4 @@
 # Sphere Ray-cast using Unity
---------------------------
 
 Sphere Ray-casting is a wide-range 3D raycasting method that uses Unity [Physics.SphereCast()](https://docs.unity3d.com/ScriptReference/Physics.SphereCast.html) and [Physics.RayCast()](https://docs.unity3d.com/ScriptReference/Physics.Raycast.html) to detect the best GameObject that can be interacted.
 
@@ -7,9 +6,13 @@ Sphere Ray-casting is a wide-range 3D raycasting method that uses Unity [Physics
 |:---| 
 | ***(Left)** Sphere-RayCasting range is visible by the two red spheres displayed on the editor screen.(The SphereCast sweeps between two red sphere to create a cylindrical range.) The green line indicates that the object has been detected and is not blocked.**(Right)** When more than one object is in range,indicated by the lines drawn towards the object(white lines indicate objects not blocked, green line indicates the prioritized object for interaction), activated object is selected by their angle offset from center of the screen. Notice that when both blue and pink sphere is in-range, green lines interchange depending on the camera's view.* |
 
+-------------------------------------------------
+
 ## Project Description
 
 This project provides scripts needed to implement Sphere Ray-casting and an example scene that shows how it works.
+
+-------------------------------------------------
 
 ## Table of Content
 
@@ -28,6 +31,8 @@ This project provides scripts needed to implement Sphere Ray-casting and an exam
 * [License](#license)
 <!--te-->
 
+-------------------------------------------------
+
 ## Objective
 
 While in developement of third-person puzzle game Aiku, I was tasked to come up with an improved raycasting method to provide a wider range of detection. Our head developer initially wanted to use the Unity provided SphereCast() method, but there were two missing functionallity in this method that were required to achieve the performance we needed.
@@ -35,6 +40,8 @@ While in developement of third-person puzzle game Aiku, I was tasked to come up 
 One was checking whether the inspect object is blocked or not, whether it may be a terrain or uninteractable objects. This would mean even if the blocked object was scripted to be interactable, it might actually be unsuitable for interaction.
 
 Second was the way SphereCast sorted the objects. Unity3D's Physics.SphereCast() returns an array-based heap of RayCastHit to its provided parameter _hitinfo_, sorted by their distance from the SphereCast's starting position. Although this was a useful information that could be used to prioritize the object to interact with when more than one interactables were in range, our head developer specifically wanted a way of prioritizing object interaction by the angle between the object and center of the screen.
+
+-------------------------------------------------
 
 ## Performance Overview
 
@@ -59,6 +66,8 @@ _1 is easier to implement than 2, but 2 has better control and performance._
 
 ***Not considering _SphereCast()_ method, 1 Has <img src="https://latex.codecogs.com/gif.latex?O(n^2)" title="O(n^2)" /> worstcase runtime. 2 has <img src="https://latex.codecogs.com/gif.latex?O(n)" title="O(nl)" /> worstcase runtime.***
 
+-------------------------------------------------
+
 ### Analysis of SphereCast
 
 Both Sphere-Raycasting method uses Physics.SphereCast() to query every objects collided by the sphere sweeped in front of the player. This returns info of all collided object as minimum heap of RayCastHit sorted by distance from player.
@@ -74,6 +83,8 @@ allHits = Physics.SphereCastAll(this.transform.position, castRadius,
  Suppose there were _n_ amounts of objects collided by SphereCast. At worst case, every newly inserted element will be a new minimum in heap, which means it would be the closest object from the play in the heap. If there were _n_ object in the heap prior to the insertion, this would cause the newly inserted minimum to traverse up the height of the binary tree, which would be ![gif](https://latex.codecogs.com/gif.latex?%5Clg%20n). Since every element will be inserted into the heap, performing _n_ number of insert, the worst case runtime of SphereCast is ![gif](https://latex.codecogs.com/gif.latex?O%28n%5Clg%20n%29).
 
 ### Analysis of Block Check
+
+-------------------------------------------------
 
 Method for block check is same for both scripts.
 
@@ -92,6 +103,8 @@ private bool IsBlocked(GameObject toCheck)
 }
 ```
 The function above takes in the object which needs to be block checked as a parameter. It performs a raycast from center of the player's camera towards the object, then check to see if the object first hit by raycast is indeed object passed in as parameter, meaning that there were no other object blocking player's view of the object.
+
+-------------------------------------------------
 
 ### Analysis of Angle Comparison
 
@@ -183,9 +196,13 @@ The result is subtle yet at some conditions quite noticeable, such as one mentio
 
 Not only does this algorithm allow better accuracy, but it improves algorithm of angle check to ![gif](https://latex.codecogs.com/gif.latex?O(n)) time.
 
+-------------------------------------------------
+
 ## How to Setup
 
 These explanations will get you through implementing sphere raycast on any Unity Project with versions that allow [Physics.SphereCast()](https://docs.unity3d.com/ScriptReference/Physics.SphereCast.html) or [Physics.RayCast()](https://docs.unity3d.com/ScriptReference/Physics.Raycast.html).
+
+-------------------------------------------------
 
 ### Requirements
 
@@ -194,6 +211,8 @@ These explanations will get you through implementing sphere raycast on any Unity
 * Any kind of FPS control with camera attached
 
 __In order for GameObjects to be detected by this ray-cast, it must implement _IInteractable_ interface, also provided by this project.__
+
+-------------------------------------------------
 
 ### Deployment
 
@@ -211,14 +230,20 @@ __In order for GameObjects to be detected by this ray-cast, it must implement _I
 * Add code for desired interaction inside Interact() method, which will be called when __Interact__ input is pressed while this object is detected.
 * Attach the created MonoBehaviour script on GameObjects you want player to interact with.
 
+-------------------------------------------------
+
 ## Example Overview
 
 These explanation describes the provided example scene [Assets/Scenes/SphereCastTest.unity](https://github.com/ALee1303/Sphere-Raycasting/tree/master/Assets/Scenes).
+
+-------------------------------------------------
 
 ### Requirement and Deployment
 * Project Version: Unity2017.3.1
 * To avoid version conflict, import package __SphereCastTest.unitypackage__ into an existing project and open the scene.
 * I recommend running test with editor screen on to see full functionality.
+
+-------------------------------------------------
 
 ### Running the Test
 * Scene consit of Unity FirstPersonCharacter controller that implements both versions of raycast.
@@ -235,6 +260,8 @@ These explanation describes the provided example scene [Assets/Scenes/SphereCast
 | ![gif](https://i.imgur.com/ttH5tY8.gif) |
 |:---|
 | *Top view of the provided test scene.* |
+
+-------------------------------------------------
 
 ## License
 
